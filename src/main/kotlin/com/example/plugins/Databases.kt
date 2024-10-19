@@ -1,4 +1,4 @@
-package com.masalkova.plugins
+package com.example.plugins
 
 import com.example.app.model.Users
 import com.example.plugins.config.AppConfig

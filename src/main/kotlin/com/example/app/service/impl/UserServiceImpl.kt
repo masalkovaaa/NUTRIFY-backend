@@ -1,4 +1,4 @@
-package com.masalkova.app.service.impl
+package com.example.app.service.impl
 
 import com.example.app.dto.User
 import com.example.plugins.exception.NotFoundException

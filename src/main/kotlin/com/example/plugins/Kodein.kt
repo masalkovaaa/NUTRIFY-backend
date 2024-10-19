@@ -9,7 +9,7 @@ import com.example.app.repository.impl.UserRepositoryImpl
 import com.example.app.service.AuthService
 import com.example.app.service.UserService
 import com.example.app.service.impl.AuthServiceImpl
-import com.masalkova.app.service.impl.UserServiceImpl
+import com.example.app.service.impl.UserServiceImpl
 import com.example.plugins.config.AppConfig
 import com.typesafe.config.ConfigFactory
 import io.github.config4k.extract

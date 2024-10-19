@@ -1,7 +1,7 @@
 package com.example.plugins.config
 
 import com.example.plugins.configureCors
-import com.masalkova.plugins.configureDatabases
+import com.example.plugins.configureDatabases
 import com.example.plugins.configureSecurity
 import com.example.plugins.configureSerialization
 import com.example.plugins.configureStatusPages

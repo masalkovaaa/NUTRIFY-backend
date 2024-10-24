@@ -14,29 +14,84 @@
 ## Model
 ```kotlin
 object Users : LongIdTable() {
+    val firstName = varchar("first_name", 255)
+    val lastName = varchar("last_name", 255)
     val username = varchar("username", 1024)
     val password = varchar("password", 1024)
     val role = enumerationByName("role", 10, Role::class)
+}
 
-    fun fromResultRow(row: ResultRow) = User(
-        id = row[id].value,
-        username = row[username],
-        password = row[password],
-        role = row[role]
+class UserDao(id: EntityID<Long>) : LongEntity(id) {
+    companion object : LongEntityClass<UserDao>(Users)
+    var firstName by Users.firstName
+    var lastName by Users.lastName
+    var username by Users.username
+    var password by Users.password
+    var role by Users.role
+
+    fun toSerializable() = User(
+        id.value,
+        username,
+        password,
+        role
     )
 }
+
+data class User(
+    val id: Long,
+    val username: String,
+    val password: String,
+    val role: Role
+)
 ```
 
 ## Repository
 ```kotlin
 interface UserRepository {
+
     fun findAll(): List<User>
+
+    fun findByUsername(username: String): User?
+
+    fun findById(id: Long): User?
+
+    fun existsByUsername(username: String): Boolean
+
+    fun save(registrationRequest: RegistrationRequest): User
 }
 
+
 class UserRepositoryImpl : UserRepository {
+
     override fun findAll(): List<User> = dbQuery {
-        Users.selectAll()
-            .map { fromResultRow(it) }
+        UserDao.all()
+            .map { it.toSerializable() }
+    }
+
+    override fun findByUsername(username: String) = dbQuery {
+        UserDao.find { Users.username eq username }
+            .firstOrNull()
+            ?.toSerializable()
+    }
+
+    override fun findById(id: Long) = dbQuery {
+        UserDao.findById(id)
+            ?.toSerializable()
+    }
+
+    override fun existsByUsername(username: String) = dbQuery {
+        UserDao.find { Users.username eq username }
+            .any()
+    }
+
+    override fun save(registrationRequest: RegistrationRequest)= dbQuery {
+        UserDao.new {
+            firstName = registrationRequest.firstName
+            lastName = registrationRequest.lastName
+            username = registrationRequest.username
+            password = BCrypt.hashpw(registrationRequest.password, BCrypt.gensalt())
+            role = Role.USER
+        }.toSerializable()
     }
 }
 ```
@@ -51,7 +106,10 @@ internal val repositories = DI.Module("repositories") {
 ## Service
 ```kotlin
 interface UserService {
+
     fun findAll(): List<User>
+
+    fun findById(id: Long): User
 }
 
 class UserServiceImpl(
@@ -61,6 +119,11 @@ class UserServiceImpl(
     override fun findAll(): List<User> {
         return userRepository.findAll()
     }
+
+    override fun findById(id: Long): User {
+        return userRepository.findById(id)
+            ?: throw NotFoundException("User with id $id not found")
+    }
 }
 ```
 
@@ -68,7 +131,6 @@ class UserServiceImpl(
 ```kotlin
 internal val services = DI.Module("services") {
     bind<UserService>() with singleton { UserServiceImpl(instance()) }
-    bind<AuthService>() with singleton { AuthServiceImpl(instance(), instance()) }
 }
 
 ```
@@ -104,15 +166,19 @@ class UserController(
     override val setup: Routing.() -> Unit
         get() = {
 
-            get {
-                val ans = userService.findAll()
-                call.respond(ans)
-            }
+            route("users") {
 
-            get("{id}") {
-                val id = call.parameters.getOrFail<Long>("id")
-                val ans = userService.findById(id)
-                call.respond(ans)
+                get {
+                    val ans = userService.findAll()
+                    call.respond(ans)
+                }
+
+                get("{id}") {
+                    val id = call.parameters.getOrFail<Long>("id")
+                    val ans = userService.findById(id)
+                    call.respond(ans)
+                }
+
             }
 
         }
@@ -124,7 +190,6 @@ class UserController(
 internal val controllers = DI.Module("controllers") {
     bindSet<Controller> {
         bind { singleton { UserController(instance()) } }
-        bind { singleton { AuthController(instance()) } }
     }
 }
 ```

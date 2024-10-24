@@ -1,6 +1,6 @@
 services:
   database:
-    container_name: my_database
+    container_name: example
     image: postgres:latest
     ports:
       - 5432:5432

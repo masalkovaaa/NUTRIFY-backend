@@ -2,10 +2,10 @@ package com.example.app.service.impl
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.example.app.dto.User
 import com.example.app.dto.auth.LoginRequest
 import com.example.app.dto.auth.RegistrationRequest
 import com.example.app.dto.auth.Token
+import com.example.app.model.User
 import com.example.app.repository.UserRepository
 import com.example.app.service.AuthService
 import com.example.plugins.config.AppConfig

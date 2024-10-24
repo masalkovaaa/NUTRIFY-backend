@@ -12,15 +12,19 @@ class UserController(
     override val setup: Routing.() -> Unit
         get() = {
 
-            get {
-                val ans = userService.findAll()
-                call.respond(ans)
-            }
+            route("users") {
 
-            get("{id}") {
-                val id = call.parameters.getOrFail<Long>("id")
-                val ans = userService.findById(id)
-                call.respond(ans)
+                get {
+                    val ans = userService.findAll()
+                    call.respond(ans)
+                }
+
+                get("{id}") {
+                    val id = call.parameters.getOrFail<Long>("id")
+                    val ans = userService.findById(id)
+                    call.respond(ans)
+                }
+
             }
 
         }

@@ -1,6 +1,6 @@
 package com.example.app.service
 
-import com.example.app.dto.User
+import com.example.app.model.User
 
 interface UserService {
 

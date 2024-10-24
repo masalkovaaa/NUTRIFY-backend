@@ -1,7 +1,7 @@
 package com.example.app.repository
 
-import com.example.app.dto.User
 import com.example.app.dto.auth.RegistrationRequest
+import com.example.app.model.User
 
 interface UserRepository {
 

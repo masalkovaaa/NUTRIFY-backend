@@ -1,7 +1,6 @@
 package com.example.app.repository.impl
 
 import com.example.app.dto.auth.RegistrationRequest
-import com.example.app.model.User
 import com.example.app.model.UserDao
 import com.example.app.model.Users
 import com.example.app.model.enum.Role
@@ -11,13 +10,8 @@ import org.mindrot.jbcrypt.BCrypt
 
 class UserRepositoryImpl : UserRepository {
 
-    override fun findAll(): List<User> = dbQuery {
-        UserDao.all()
-            .map { it.toSerializable() }
-    }
-
-    override fun findByUsername(username: String) = dbQuery {
-        UserDao.find { Users.username eq username }
+    override fun findByEmail(email: String) = dbQuery {
+        UserDao.find { Users.email eq email }
             .firstOrNull()
             ?.toSerializable()
     }
@@ -27,16 +21,15 @@ class UserRepositoryImpl : UserRepository {
             ?.toSerializable()
     }
 
-    override fun existsByUsername(username: String) = dbQuery {
-        UserDao.find { Users.username eq username }
+    override fun existsByEmail(email: String) = dbQuery {
+        UserDao.find { Users.email eq email }
             .any()
     }
 
     override fun save(registrationRequest: RegistrationRequest)= dbQuery {
         UserDao.new {
-            firstName = registrationRequest.firstName
-            lastName = registrationRequest.lastName
-            username = registrationRequest.username
+            name = registrationRequest.name
+            email = registrationRequest.email
             password = BCrypt.hashpw(registrationRequest.password, BCrypt.gensalt())
             role = Role.USER
         }.toSerializable()

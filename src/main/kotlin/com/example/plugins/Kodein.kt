@@ -4,7 +4,9 @@ import com.example.WebStarter
 import com.example.app.controller.AuthController
 import com.example.plugins.config.Controller
 import com.example.app.controller.UserController
+import com.example.app.repository.PersonalDataRepository
 import com.example.app.repository.UserRepository
+import com.example.app.repository.impl.PersonalDataRepositoryImpl
 import com.example.app.repository.impl.UserRepositoryImpl
 import com.example.app.service.AuthService
 import com.example.app.service.UserService
@@ -24,11 +26,12 @@ internal val controllers = DI.Module("controllers") {
 
 internal val services = DI.Module("services") {
     bind<UserService>() with singleton { UserServiceImpl(instance()) }
-    bind<AuthService>() with singleton { AuthServiceImpl(instance(), instance()) }
+    bind<AuthService>() with singleton { AuthServiceImpl(instance(), instance(), instance()) }
 }
 
 internal val repositories = DI.Module("repositories") {
     bind<UserRepository>() with singleton { UserRepositoryImpl() }
+    bind<PersonalDataRepository>() with singleton { PersonalDataRepositoryImpl() }
 }
 
 val kodein = DI {

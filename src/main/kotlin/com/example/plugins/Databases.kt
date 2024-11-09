@@ -1,5 +1,6 @@
 package com.example.plugins
 
+import com.example.app.model.PersonalData
 import com.example.app.model.Users
 import com.example.plugins.config.AppConfig
 import io.ktor.server.application.*
@@ -14,6 +15,6 @@ fun Application.configureDatabases(appConfig: AppConfig) {
     )
 
     transaction(database) {
-        SchemaUtils.createMissingTablesAndColumns(Users)
+        SchemaUtils.createMissingTablesAndColumns(Users, PersonalData)
     }
 }

@@ -5,13 +5,11 @@ import com.example.app.model.User
 
 interface UserRepository {
 
-    fun findAll(): List<User>
-
-    fun findByUsername(username: String): User?
+    fun findByEmail(email: String): User?
 
     fun findById(id: Long): User?
 
-    fun existsByUsername(username: String): Boolean
+    fun existsByEmail(email: String): Boolean
 
     fun save(registrationRequest: RegistrationRequest): User
 }

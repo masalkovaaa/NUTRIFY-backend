@@ -51,7 +51,7 @@ class AuthServiceImpl(
     private fun createToken(user: User): Token {
         val value = JWT.create()
             .withAudience(appConfig.security.jwtAudience)
-            .withIssuer(appConfig.security.jwtRealm)
+            .withIssuer(appConfig.security.jwtDomain)
             .withClaim("email", user.email)
             .withClaim("role", user.role.name)
             .withExpiresAt(Date(System.currentTimeMillis() + 43200000))

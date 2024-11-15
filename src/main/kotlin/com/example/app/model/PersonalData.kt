@@ -6,7 +6,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.LongIdTable
 import java.math.BigDecimal
 
-object PersonalData : LongIdTable("personal_data") {
+object PersonalData : LongIdTable("nutrify.personal_data") {
     val userId = reference("user_id", Users)
     val age = integer("age")
     val height = decimal("height", 10, 1)

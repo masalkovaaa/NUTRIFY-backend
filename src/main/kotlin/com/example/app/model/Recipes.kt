@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.LongIdTable
 
-object Recipes : LongIdTable() {
+object Recipes : LongIdTable("nutrify.recipes") {
     val name = varchar("name", 255)
     val description = varchar("description", 1024)
     val calories = integer("calories")

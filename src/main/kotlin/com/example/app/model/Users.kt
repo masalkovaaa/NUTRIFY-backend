@@ -6,7 +6,7 @@ import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.LongIdTable
 
-object Users : LongIdTable() {
+object Users : LongIdTable("nutrify.users") {
     val name = varchar("name", 255)
     val email = varchar("email", 1024)
     val password = varchar("password", 1024)

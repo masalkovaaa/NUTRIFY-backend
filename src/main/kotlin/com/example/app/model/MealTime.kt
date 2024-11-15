@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.LongIdTable
 
-object MealTime : LongIdTable() {
+object MealTime : LongIdTable("nutrify.meail_time") {
     val recipeId = reference("recipe_id", Recipes)
     val type = enumerationByName<MealType>("type", 15)
 }

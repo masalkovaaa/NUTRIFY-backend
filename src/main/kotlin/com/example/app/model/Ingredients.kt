@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.LongIdTable
 
-object Ingredients : LongIdTable() {
+object Ingredients : LongIdTable("nutrify.ingredients") {
     val name = varchar("name", 255)
     val weight = integer("weight")
     val weightType = enumerationByName<WeightType>("weight_type", 10)

@@ -12,6 +12,7 @@ object Recipes : LongIdTable("nutrify.recipes") {
     val protein = integer("protein")
     val fats = integer("fats")
     val carbs = integer("carbs")
+    val image = varchar("image", 1024).nullable()
 }
 
 class RecipeDao(id: EntityID<Long>) : LongEntity(id) {
@@ -22,6 +23,7 @@ class RecipeDao(id: EntityID<Long>) : LongEntity(id) {
     var protein by Recipes.protein
     var fats by Recipes.fats
     var carbs by Recipes.carbs
+    var image by Recipes.image
 
     val ingredients by IngredientDao referrersOn Ingredients.recipeId
 
@@ -33,6 +35,7 @@ class RecipeDao(id: EntityID<Long>) : LongEntity(id) {
         protein = protein,
         fats = fats,
         carbs = carbs,
+        image = image,
         ingredients = ingredients.map { it.toSerializable() },
     )
 }
@@ -45,5 +48,6 @@ data class Recipe(
     val protein: Int,
     val fats: Int,
     val carbs: Int,
+    val image: String?,
     val ingredients: List<Ingredient> = arrayListOf()
 )

@@ -6,4 +6,6 @@ import com.example.app.model.PersonalDataDto
 interface PersonalDataRepository {
 
     fun save(registrationRequest: RegistrationRequest, userId: Long): PersonalDataDto
+
+    fun findByUserId(id: Long): PersonalDataDto
 }

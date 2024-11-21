@@ -8,4 +8,8 @@ interface RecipeRepository {
     fun save(recipe: Recipe): Recipe
 
     fun findByMealType(mealType: MealType): List<Recipe>
+
+    fun addImage(url: String, recipeId: Long)
+
+    fun findMealByRangeCaloriesAndType(caloriesFrom: Int, caloriesTo: Int, type: MealType): List<Recipe>
 }

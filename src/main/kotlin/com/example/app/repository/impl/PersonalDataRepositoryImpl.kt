@@ -2,9 +2,12 @@ package com.example.app.repository.impl
 
 import com.example.app.dto.auth.RegistrationRequest
 import com.example.app.dto.calculation.CalculationCaloriesDto
+import com.example.app.model.PersonalData
 import com.example.app.model.PersonalDataDao
+import com.example.app.model.PersonalDataDto
 import com.example.app.model.Users
 import com.example.app.repository.PersonalDataRepository
+import com.example.plugins.exception.NotFoundException
 import com.example.plugins.extension.calc.calculateCalories
 import com.example.plugins.extension.db.dbQuery
 import org.jetbrains.exposed.dao.id.EntityID
@@ -23,5 +26,12 @@ class PersonalDataRepositoryImpl : PersonalDataRepository {
             this.activity = activity
             this.calories = calculateCalories(CalculationCaloriesDto(age, height, weight, sex, target, activity))
         }.toSerializable()
+    }
+
+    override fun findByUserId(id: Long) = dbQuery {
+        PersonalDataDao.find { PersonalData.userId eq id }
+            .firstOrNull()
+            ?.toSerializable()
+            ?: throw NotFoundException("PersonalData not found")
     }
 }

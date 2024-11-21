@@ -9,4 +9,8 @@ interface FoodService {
     fun save(food: FoodCreateDto)
 
     fun findByMealType(mealType: MealType): List<Recipe>
+
+    fun addImageToRecipe(bytes: ByteArray, recipeId: Long)
+
+    fun calculateDiet(userId: Long): List<Recipe>
 }

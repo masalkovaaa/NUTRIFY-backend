@@ -5,6 +5,7 @@ import com.example.app.repository.RecipeRepository
 import com.example.plugins.extension.db.dbQuery
 import org.jetbrains.exposed.dao.with
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
 
 class RecipeRepositoryImpl : RecipeRepository {
 
@@ -38,8 +39,9 @@ class RecipeRepositoryImpl : RecipeRepository {
             .where {
                 (MealTime.type eq type)
                 .and(Recipes.calories greaterEq caloriesFrom)
-                .and(Recipes.calories lessEq  caloriesTo)
-            }.map { RecipeDao.wrapRow(it) }
+                .and(Recipes.calories lessEq caloriesTo)
+            }.distinctBy { it[Recipes.id] }
+            .map { RecipeDao.wrapRow(it) }
             .with(RecipeDao::ingredients)
             .map { it.toSerializable() }
     }

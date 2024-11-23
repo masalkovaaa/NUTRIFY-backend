@@ -1,6 +1,7 @@
 package com.example.app.service.impl
 
 import com.example.app.dto.food.FoodCreateDto
+import com.example.app.dto.food.FoodCharacteristicDto
 import com.example.app.model.MealType
 import com.example.app.model.PersonalDataDto
 import com.example.app.model.Recipe
@@ -11,6 +12,7 @@ import com.example.app.service.FoodService
 import com.example.app.service.UploadService
 import com.example.app.service.UserService
 import com.example.plugins.extension.db.dbQuery
+import java.util.*
 import kotlin.math.abs
 
 class FoodServiceImpl(
@@ -20,6 +22,11 @@ class FoodServiceImpl(
     private val userService: UserService,
     private val uploadService: UploadService
 ) : FoodService {
+
+    companion object {
+        private const val ERROR_PERCENTAGE = 0.05
+        private const val MEAL_DAY_COUNT = 7
+    }
 
     override fun save(food: FoodCreateDto) = dbQuery {
         val recipeId = recipeRepository.save(food.recipe).id!!
@@ -35,14 +42,9 @@ class FoodServiceImpl(
         recipeRepository.addImage(url, recipeId)
     }
 
-    override fun calculateDiet(userId: Long): List<Recipe> {
+    override fun calculateDiet(userId: Long): List<List<Recipe>> {
         val personalData = userService.findPersonalDataById(userId)
-        val typeToCalories = MealType.entries.associateWith { when(it) {
-            MealType.BREAKFAST -> personalData.calories.toDouble() / 100.0 * 25
-            MealType.LAUNCH -> personalData.calories.toDouble() / 100.0 * 35
-            MealType.DINNER -> personalData.calories.toDouble() / 100.0 * 25
-            MealType.PART_MEAL -> personalData.calories.toDouble() / 100.0 * 15
-        } }
+        val typeToCalories = MealType.entries.associateWith { it.calculateCalories(personalData.calories.toDouble()) }
         val result: MutableMap<MealType, List<Recipe>> = mutableMapOf()
         typeToCalories.forEach { (type, calories) ->
             val recipes = when (type) {
@@ -54,39 +56,54 @@ class FoodServiceImpl(
         return calculate(personalData, result)
     }
 
-    private fun calculate(personalData: PersonalDataDto, map: MutableMap<MealType, List<Recipe>>): ArrayList<Recipe> {
-        var closest = 1000.0
-        val calories = personalData.calories.toDouble()
-        val protein = personalData.weight.toDouble() * 1.8
-        val fats = personalData.weight.toDouble()
-        val carbs = (calories - protein * 4 - fats * 9) / 4
-        val listOfMeals = arrayListOf<Recipe>()
+    private fun calculate(personalData: PersonalDataDto, map: MutableMap<MealType, List<Recipe>>, mealDayCount: Int = MEAL_DAY_COUNT): List<List<Recipe>> {
+        val queue = PriorityQueue<Pair<Double, List<Recipe>>>(compareByDescending { it.first })
+        val targetCharacteristic = calculateTargetFoodCharacteristic(personalData)
         map[MealType.BREAKFAST]?.forEach { breakfast ->
             map[MealType.LAUNCH]?.forEach { launch ->
                 map[MealType.DINNER]?.forEach { dinner ->
                     map[MealType.PART_MEAL]?.forEach { partMeal ->
-                        val proteinCalc = (breakfast.protein + launch.protein + dinner.protein + partMeal.protein).toDouble()
-                        val fatsCalc = (breakfast.fats + launch.fats + dinner.fats + partMeal.fats).toDouble()
-                        val carbsCalc = (breakfast.carbs + launch.carbs + dinner.carbs + partMeal.carbs).toDouble()
-                        val caloriesCalc = (breakfast.calories + launch.calories + dinner.calories + partMeal.calories).toDouble()
-                        val result = abs((proteinCalc / protein + fatsCalc / fats + carbsCalc / carbs + caloriesCalc / calories) - 4.0)
-                        if (result < closest
-                            && abs(proteinCalc - protein) / protein < 0.1
-                            && abs(fatsCalc - fats) / fats < 0.1
-                            && abs(carbsCalc - carbs) / carbs < 0.1
-                            && breakfast.id != launch.id
-                            && launch.id != dinner.id
-                            && breakfast.id != dinner.id
+                        val mealCharacteristic = mapToFoodCharacteristic(listOf(breakfast, launch, dinner, partMeal))
+                        val result = mealCharacteristic.compare(targetCharacteristic)
+                        if (mealCharacteristic.isFitInTarget(targetCharacteristic)
+                            && setOf(breakfast.id, launch.id, dinner.id, partMeal.id).size == 4
+                            && (queue.size < mealDayCount || queue.peek().first > result)
                             )
                         {
-                            closest = result
-                            listOfMeals.clear()
-                            listOfMeals.addAll(listOf(breakfast, launch, dinner, partMeal))
+                            queue.add(Pair(result, listOf(breakfast, launch, dinner, partMeal)))
+                            if (queue.size > mealDayCount) queue.poll()
                         }
                     }
                 }
             }
         }
-        return listOfMeals
+        return queue.map { it.second }.toList()
     }
+
+    private fun calculateTargetFoodCharacteristic(personalData: PersonalDataDto): FoodCharacteristicDto {
+        val calories = personalData.calories.toDouble()
+        val protein = personalData.weight.toDouble() * 1.8
+        val fats = personalData.weight.toDouble()
+        return FoodCharacteristicDto(
+            calories,
+            protein,
+            fats,
+            (calories - protein * 4 - fats * 9) / 4
+        )
+    }
+
+    private fun mapToFoodCharacteristic(recipes: List<Recipe>) = FoodCharacteristicDto(
+        recipes.sumOf { it.calories }.toDouble(),
+        recipes.sumOf { it.protein }.toDouble(),
+        recipes.sumOf { it.fats }.toDouble(),
+        recipes.sumOf { it.carbs }.toDouble()
+    )
+
+    private fun FoodCharacteristicDto.compare(another: FoodCharacteristicDto) =
+        abs((this.protein / another.protein + this.fats / another.fats + this.carbs / carbs + this.calories / another.calories) - 4.0)
+
+    private fun FoodCharacteristicDto.isFitInTarget(target: FoodCharacteristicDto) =
+        abs(this.protein - target.protein) / target.protein < ERROR_PERCENTAGE
+                && abs(this.fats - target.fats) / target.fats < ERROR_PERCENTAGE
+                && abs(this.carbs - target.carbs) / target.carbs < ERROR_PERCENTAGE
 }

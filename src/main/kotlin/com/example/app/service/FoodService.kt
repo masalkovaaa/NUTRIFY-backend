@@ -12,5 +12,5 @@ interface FoodService {
 
     fun addImageToRecipe(bytes: ByteArray, recipeId: Long)
 
-    fun calculateDiet(userId: Long): List<Recipe>
+    fun calculateDiet(userId: Long): List<List<Recipe>>
 }

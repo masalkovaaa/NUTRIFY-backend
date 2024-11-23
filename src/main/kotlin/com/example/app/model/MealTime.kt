@@ -18,6 +18,8 @@ class MealTimeDao(id: EntityID<Long>) : LongEntity(id) {
     val recipe by RecipeDao referencedOn MealTime.recipeId
 }
 
-enum class MealType(val percentage: Int) {
-    BREAKFAST(25), LAUNCH(30), DINNER(25), PART_MEAL(15)
+enum class MealType(val percentage: Double) {
+    BREAKFAST(0.25), LAUNCH(0.35), DINNER(0.25), PART_MEAL(0.15);
+
+    fun calculateCalories(calories: Double) = calories * percentage
 }

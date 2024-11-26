@@ -23,15 +23,6 @@ class FoodController(
         get() = {
             route("food") {
 
-                post("test") {
-                    val body = call.receive<List<List<Recipe>>>()
-                    val calories = body.map { it.map { it.calories }.sum() }
-                    val protein = body.map { it.map { it.protein }.sum() }
-                    val fats = body.map { it.map { it.fats }.sum() }
-                    val carbs = body.map { it.map { it.carbs }.sum() }
-                    println("$calories $protein $fats $carbs")
-                    call.respond(HttpStatusCode.OK)
-                }
                 authenticate("admin") {
                     post {
                         val foodCreateDto = call.receive<FoodCreateDto>()
@@ -51,6 +42,20 @@ class FoodController(
                         }
                         call.respond(HttpStatusCode.OK)
                     }
+
+                    post("analyze") {
+                        val body = call.receive<List<List<Recipe>>>()
+                        val ans = body.map {
+                            listOf(it.map { it.id }.joinToString("-")) to
+                                    listOf(
+                                        it.map { it.calories }.sum(),
+                                        it.map { it.protein }.sum(),
+                                        it.map { it.fats }.sum(),
+                                        it.map { it.carbs }.sum()
+                                    ).joinToString("-")
+                        }
+                        call.respond(ans)
+                    }
                 }
 
                 authenticate("user") {
@@ -59,16 +64,6 @@ class FoodController(
                         val ans = foodService.calculateDiet(principal.id)
                         call.respond(ans)
                     }
-
-//                    ans.map {
-//                        listOf(it.map { it.id }.joinToString("-")) to
-//                                listOf(
-//                                    it.map { it.calories }.sum(),
-//                                    it.map { it.protein }.sum(),
-//                                    it.map { it.fats }.sum(),
-//                                    it.map { it.carbs }.sum()
-//                                ).joinToString("-")
-//                    }
                 }
 
                 get {

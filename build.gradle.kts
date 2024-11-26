@@ -1,3 +1,5 @@
+import io.ktor.plugin.features.*
+
 val kotlin_version: String by project
 val logback_version: String by project
 val postgres_version: String by project
@@ -18,24 +20,6 @@ application {
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
-}
-
-tasks.withType<Jar> {
-    // Otherwise you'll get a "No main manifest attribute" error
-    manifest {
-        attributes["Main-Class"] = "com.example.ApplicationKt"
-    }
-
-    // To avoid the duplicate handling strategy error
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-    // To add all of the dependencies
-    from(sourceSets.main.get().output)
-
-    dependsOn(configurations.runtimeClasspath)
-    from({
-        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-    })
 }
 
 repositories {
@@ -79,4 +63,27 @@ dependencies {
     // TESTS
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+}
+
+ktor {
+    docker {
+        val username = System.getenv("DOCKER_USERNAME")
+        val password = System.getenv("DOCKER_PASSWORD")
+        localImageName.set("$username/nutrify")
+        imageTag.set("latest")
+        externalRegistry.set(
+            DockerImageRegistry.dockerHub(
+                appName = provider { "nutrify" },
+                username = provider { username },
+                password = provider { password }
+            )
+        )
+    }
+}
+
+tasks.register("buildAndPushDocker") {
+    group = "docker"
+    description = "Собирает проект, создает Docker-образ и отправляет его в реестр"
+
+    dependsOn("clean", "buildImage", "publishImage")
 }

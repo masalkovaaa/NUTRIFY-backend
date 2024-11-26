@@ -9,17 +9,13 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.example.WebStarter
 import com.example.app.controller.AuthController
 import com.example.app.controller.FoodController
+import com.example.app.controller.PersonalDataController
+import com.example.app.controller.UserController
 import com.example.app.repository.*
 import com.example.app.repository.impl.*
+import com.example.app.service.*
+import com.example.app.service.impl.*
 import com.example.plugins.config.Controller
-import com.example.app.service.AuthService
-import com.example.app.service.FoodService
-import com.example.app.service.UploadService
-import com.example.app.service.UserService
-import com.example.app.service.impl.AuthServiceImpl
-import com.example.app.service.impl.FoodServiceImpl
-import com.example.app.service.impl.UploadServiceImpl
-import com.example.app.service.impl.UserServiceImpl
 import com.example.plugins.config.AppConfig
 import com.typesafe.config.ConfigFactory
 import io.github.config4k.extract
@@ -29,6 +25,8 @@ internal val controllers = DI.Module("controllers") {
     bindSet<Controller> {
         bind { singleton { AuthController(instance()) } }
         bind { singleton { FoodController(instance()) } }
+        bind { singleton { UserController(instance()) } }
+        bind { singleton { PersonalDataController(instance()) } }
     }
 }
 
@@ -37,6 +35,7 @@ internal val services = DI.Module("services") {
     bind<AuthService>() with singleton { AuthServiceImpl(instance(), instance(), instance()) }
     bind<FoodService>() with singleton { FoodServiceImpl(instance(), instance(), instance(), instance(), instance()) }
     bind<UploadService>() with singleton { UploadServiceImpl(instance(), instance()) }
+    bind<PersonalDataService>() with singleton { PersonalDataServiceImpl(instance()) }
 }
 
 internal val repositories = DI.Module("repositories") {

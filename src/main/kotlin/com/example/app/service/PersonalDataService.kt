@@ -1,14 +1,9 @@
-package com.example.app.repository
+package com.example.app.service
 
-import com.example.app.dto.auth.RegistrationRequest
 import com.example.app.dto.user.PersonalDataUpdateDto
 import com.example.app.model.PersonalDataDto
 
-interface PersonalDataRepository {
-
-    fun save(registrationRequest: RegistrationRequest, userId: Long): PersonalDataDto
-
-    fun findByUserId(id: Long): PersonalDataDto
+interface PersonalDataService {
 
     fun updatePersonalData(personalDataUpdateDto: PersonalDataUpdateDto, userId: Long): PersonalDataDto
 

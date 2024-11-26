@@ -4,7 +4,9 @@ import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.LongIdTable
+import org.jetbrains.exposed.sql.javatime.datetime
 import java.math.BigDecimal
+import java.time.LocalDateTime
 
 object PersonalData : LongIdTable("nutrify.personal_data") {
     val userId = reference("user_id", Users)
@@ -14,7 +16,8 @@ object PersonalData : LongIdTable("nutrify.personal_data") {
     val sex = enumerationByName<Sex>("sex", 10)
     val target = enumerationByName<Target>("target", 20)
     val activity = enumerationByName<Activity>("activity", 20)
-    var calories = integer("calories")
+    val calories = integer("calories")
+    val updatedAt = datetime("updated_at").default(LocalDateTime.now())
 }
 
 class PersonalDataDao(id: EntityID<Long>) : LongEntity(id) {
@@ -27,6 +30,7 @@ class PersonalDataDao(id: EntityID<Long>) : LongEntity(id) {
     var activity by PersonalData.activity
     var userId by PersonalData.userId
     var calories by PersonalData.calories
+    var updatedAt by PersonalData.updatedAt
 
     fun toSerializable() = PersonalDataDto(
         id.value,
@@ -36,7 +40,8 @@ class PersonalDataDao(id: EntityID<Long>) : LongEntity(id) {
         sex,
         target,
         activity,
-        calories
+        calories,
+        updatedAt
     )
 }
 
@@ -48,7 +53,8 @@ data class PersonalDataDto(
     val sex: Sex,
     val target: Target,
     val activity: Activity,
-    val calories: Int
+    val calories: Int,
+    val updatedAt: LocalDateTime
 )
 
 enum class Sex {

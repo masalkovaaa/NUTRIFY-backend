@@ -1,8 +1,8 @@
 package com.example.app.controller
 
 import com.example.app.dto.food.FoodCreateDto
+import com.example.app.dto.food.MealDietDto
 import com.example.app.model.MealType
-import com.example.app.model.Recipe
 import com.example.app.service.FoodService
 import com.example.plugins.config.Controller
 import com.example.plugins.extension.auth.getPrincipal
@@ -15,6 +15,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import io.ktor.utils.io.*
 import kotlinx.io.readByteArray
+import java.time.LocalDate
 
 class FoodController(
     private val foodService: FoodService
@@ -42,34 +43,23 @@ class FoodController(
                         }
                         call.respond(HttpStatusCode.OK)
                     }
-
-                    post("analyze") {
-                        val body = call.receive<List<List<Recipe>>>()
-                        val ans = body.map {
-                            listOf(it.map { it.id }.joinToString("-")) to
-                                    listOf(
-                                        it.map { it.calories }.sum(),
-                                        it.map { it.protein }.sum(),
-                                        it.map { it.fats }.sum(),
-                                        it.map { it.carbs }.sum()
-                                    ).joinToString("-")
-                        }
-                        call.respond(ans)
-                    }
                 }
 
                 authenticate("user") {
                     get {
-                        val principal = call.getPrincipal()
-                        val ans = foodService.calculateDiet(principal.id)
-                        call.respond(ans)
+                        try {
+                            val mealType = call.queryParameters.getOrFail<MealType>("type")
+                            call.respond(foodService.findByMealType(mealType))
+                        } catch (e: Exception) {
+                            call.respond(foodService.findAll())
+                        }
                     }
-                }
 
-                get {
-                    val mealType = call.queryParameters.getOrFail<MealType>("type")
-                    val ans = foodService.findByMealType(mealType)
-                    call.respond(ans)
+                    get("diet") {
+                        val date = call.queryParameters["date"].let { LocalDate.parse(it) }
+                        val principal = call.getPrincipal()
+                        call.respond(foodService.findDietByDate(date, principal.id))
+                    }
                 }
             }
         }

@@ -1,11 +1,10 @@
 package com.example.app.service
 
 import com.example.app.dto.user.PersonalDataUpdateDto
-import com.example.app.model.PersonalDataDto
 
 interface PersonalDataService {
 
-    fun updatePersonalData(personalDataUpdateDto: PersonalDataUpdateDto, userId: Long): PersonalDataDto
+    suspend fun updatePersonalData(personalDataUpdateDto: PersonalDataUpdateDto, userId: Long)
 
     fun isPossibleToUpdate(userId: Long): Boolean
 }

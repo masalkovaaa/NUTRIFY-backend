@@ -14,6 +14,7 @@ fun Application.configureSerialization() {
             registerModule(JavaTimeModule())
             setSerializationInclusion(JsonInclude.Include.NON_NULL)
             enable(SerializationFeature.INDENT_OUTPUT)
+            disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         }
     }

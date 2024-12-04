@@ -17,7 +17,7 @@ fun Application.configureDatabases(appConfig: AppConfig) {
 
     transaction(database) {
         exec("SET search_path TO nutrify")
-        SchemaUtils.createMissingTablesAndColumns(Users, PersonalData, Recipes, Ingredients, MealTime)
+        SchemaUtils.createMissingTablesAndColumns(Users, PersonalData, Recipes, Ingredients, MealTime, MealDiet)
         Users.upsert {
             it[id] = 1
             it[name] = "admin"

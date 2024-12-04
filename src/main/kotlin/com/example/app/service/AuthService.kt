@@ -8,5 +8,5 @@ interface AuthService {
 
     fun login(loginRequest: LoginRequest): Token
 
-    fun register(registrationRequest: RegistrationRequest): Token
+    suspend fun register(registrationRequest: RegistrationRequest): Token
 }

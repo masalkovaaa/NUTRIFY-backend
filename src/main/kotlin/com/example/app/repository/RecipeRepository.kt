@@ -7,6 +7,8 @@ interface RecipeRepository {
 
     fun save(recipe: Recipe): Recipe
 
+    fun findAll(): List<Recipe>
+
     fun findByMealType(mealType: MealType): List<Recipe>
 
     fun addImage(url: String, recipeId: Long)

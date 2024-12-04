@@ -4,6 +4,7 @@ import com.example.app.dto.user.PersonalDataUpdateDto
 import com.example.app.service.PersonalDataService
 import com.example.plugins.config.Controller
 import com.example.plugins.extension.auth.getPrincipal
+import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -20,7 +21,7 @@ class PersonalDataController(
                         val principal = call.getPrincipal()
                         val body = call.receive<PersonalDataUpdateDto>()
                         val ans = personalDataService.updatePersonalData(body, principal.id)
-                        call.respond(ans)
+                        call.respond(HttpStatusCode.OK)
                     }
 
                     get("is_possible_to_update") {

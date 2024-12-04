@@ -5,7 +5,6 @@ import com.example.app.repository.RecipeRepository
 import com.example.plugins.extension.db.dbQuery
 import org.jetbrains.exposed.dao.with
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
 
 class RecipeRepositoryImpl : RecipeRepository {
 
@@ -20,11 +19,19 @@ class RecipeRepositoryImpl : RecipeRepository {
         }.toSerializable()
     }
 
-    override fun findByMealType(mealType: MealType) = dbQuery {
-        MealTimeDao.find { MealTime.type eq mealType }
-            .with(MealTimeDao::recipe)
+    override fun findAll() = dbQuery {
+        RecipeDao.all()
             .with(RecipeDao::ingredients)
-            .map { it.recipe.toSerializable() }
+            .map { it.toSerializable() }
+    }
+
+    override fun findByMealType(mealType: MealType) = dbQuery {
+        (Recipes innerJoin MealTime innerJoin Ingredients)
+            .select(Recipes.columns + MealTime.columns + Ingredients.columns)
+            .where { MealTime.type eq mealType }
+            .map { RecipeDao.wrapRow(it) }
+            .with(RecipeDao::ingredients)
+            .map { it.toSerializable() }
     }
 
     override fun addImage(url: String, recipeId: Long): Unit = dbQuery {

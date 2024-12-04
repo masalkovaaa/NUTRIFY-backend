@@ -11,6 +11,7 @@ import com.example.app.controller.AuthController
 import com.example.app.controller.FoodController
 import com.example.app.controller.PersonalDataController
 import com.example.app.controller.UserController
+import com.example.app.dto.channel.GenerateDietMessage
 import com.example.app.repository.*
 import com.example.app.repository.impl.*
 import com.example.app.service.*
@@ -19,6 +20,7 @@ import com.example.plugins.config.Controller
 import com.example.plugins.config.AppConfig
 import com.typesafe.config.ConfigFactory
 import io.github.config4k.extract
+import kotlinx.coroutines.channels.Channel
 import org.kodein.di.*
 
 internal val controllers = DI.Module("controllers") {
@@ -31,11 +33,12 @@ internal val controllers = DI.Module("controllers") {
 }
 
 internal val services = DI.Module("services") {
+    importOnce(channel)
     bind<UserService>() with singleton { UserServiceImpl(instance(), instance()) }
-    bind<AuthService>() with singleton { AuthServiceImpl(instance(), instance(), instance()) }
-    bind<FoodService>() with singleton { FoodServiceImpl(instance(), instance(), instance(), instance(), instance()) }
+    bind<AuthService>() with singleton { AuthServiceImpl(instance(), instance(), instance(), instance()) }
+    bind<FoodService>() with singleton { FoodServiceImpl(instance(), instance(), instance(), instance(), instance(), instance(), instance()) }
     bind<UploadService>() with singleton { UploadServiceImpl(instance(), instance()) }
-    bind<PersonalDataService>() with singleton { PersonalDataServiceImpl(instance()) }
+    bind<PersonalDataService>() with singleton { PersonalDataServiceImpl(instance(), instance()) }
 }
 
 internal val repositories = DI.Module("repositories") {
@@ -44,6 +47,7 @@ internal val repositories = DI.Module("repositories") {
     bind<RecipeRepository>() with singleton { RecipeRepositoryImpl() }
     bind<IngredientRepository>() with singleton { IngredientRepositoryImpl() }
     bind<MealTimeRepository>() with singleton { MealTimeRepositoryImpl() }
+    bind<MealDietRepository>() with singleton { MealDietRepositoryImpl() }
 }
 
 internal val s3 = DI.Module("s3") {
@@ -67,12 +71,17 @@ internal val s3 = DI.Module("s3") {
     }
 }
 
+internal val channel = DI.Module("channel") {
+    bind<Channel<GenerateDietMessage>>() with singleton { Channel() }
+}
+
 val kodein = DI {
 
-    import(controllers)
-    import(services)
-    import(repositories)
-    import(s3)
+    importOnce(controllers)
+    importOnce(services)
+    importOnce(repositories)
+    importOnce(s3)
+    importOnce(channel)
 
     bind { singleton { ConfigFactory.load().extract<AppConfig>("app") } }
     bind<WebStarter>() with singleton { WebStarter(instance(), instance()) }

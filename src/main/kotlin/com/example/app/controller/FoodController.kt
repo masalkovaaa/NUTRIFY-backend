@@ -1,7 +1,6 @@
 package com.example.app.controller
 
 import com.example.app.dto.food.FoodCreateDto
-import com.example.app.dto.food.MealDietDto
 import com.example.app.model.MealType
 import com.example.app.service.FoodService
 import com.example.plugins.config.Controller

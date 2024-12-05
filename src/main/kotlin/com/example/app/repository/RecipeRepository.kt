@@ -9,6 +9,8 @@ interface RecipeRepository {
 
     fun findAll(): List<Recipe>
 
+    fun findById(id: Long): Recipe
+
     fun findByMealType(mealType: MealType): List<Recipe>
 
     fun addImage(url: String, recipeId: Long)

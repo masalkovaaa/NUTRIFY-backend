@@ -1,14 +1,17 @@
 package com.example.app.repository.impl
 
 import com.example.app.dto.auth.RegistrationRequest
+import com.example.app.dto.user.UserDto
 import com.example.app.dto.user.UserUpdateDto
-import com.example.app.model.User
+import com.example.app.model.PersonalData
+import com.example.app.model.PersonalDataDao
 import com.example.app.model.UserDao
 import com.example.app.model.Users
 import com.example.app.model.enum.Role
 import com.example.app.repository.UserRepository
 import com.example.plugins.exception.NotFoundException
 import com.example.plugins.extension.db.dbQuery
+import org.jetbrains.exposed.sql.ResultRow
 import org.mindrot.jbcrypt.BCrypt
 
 class UserRepositoryImpl : UserRepository {
@@ -22,6 +25,15 @@ class UserRepositoryImpl : UserRepository {
     override fun findById(id: Long) = dbQuery {
         UserDao.findById(id)
             ?.toSerializable()
+    }
+
+    override fun findUserProfileById(id: Long) = dbQuery {
+        (Users innerJoin PersonalData)
+            .select(Users.columns + PersonalData.columns)
+            .where { Users.id eq id }
+            .firstOrNull()
+            ?.let { toUserDto(it) }
+            ?: throw NotFoundException("User with id $id not found")
     }
 
     override fun existsByEmail(email: String) = dbQuery {
@@ -46,4 +58,10 @@ class UserRepositoryImpl : UserRepository {
         }?.toSerializable()
             ?: throw NotFoundException("User with id $userId does not exist")
     }
+
+    private fun toUserDto(row: ResultRow) = UserDto(
+        id =  row[Users.id].value,
+        email = row[Users.email],
+        personalData = PersonalDataDao.wrapRow(row).toSerializable()
+    )
 }

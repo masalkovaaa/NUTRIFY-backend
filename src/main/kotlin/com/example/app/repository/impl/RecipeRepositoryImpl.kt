@@ -2,6 +2,7 @@ package com.example.app.repository.impl
 
 import com.example.app.model.*
 import com.example.app.repository.RecipeRepository
+import com.example.plugins.exception.NotFoundException
 import com.example.plugins.extension.db.dbQuery
 import org.jetbrains.exposed.dao.with
 import org.jetbrains.exposed.sql.and
@@ -23,6 +24,11 @@ class RecipeRepositoryImpl : RecipeRepository {
         RecipeDao.all()
             .with(RecipeDao::ingredients)
             .map { it.toSerializable() }
+    }
+
+    override fun findById(id: Long) = dbQuery {
+        RecipeDao.findById(id)?.toSerializable()
+            ?: throw NotFoundException("Recipe with ID $id not found")
     }
 
     override fun findByMealType(mealType: MealType) = dbQuery {

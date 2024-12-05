@@ -22,6 +22,12 @@ class UserController(
                         val ans = userService.update(body, principal.id)
                         call.respond(ans)
                     }
+
+                    get {
+                        val principal = call.getPrincipal()
+                        val ans = userService.findUserById(principal.id)
+                        call.respond(ans)
+                    }
                 }
             }
         }

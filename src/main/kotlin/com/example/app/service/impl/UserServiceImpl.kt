@@ -12,5 +12,7 @@ class UserServiceImpl(
 
     override fun findPersonalDataById(id: Long) = personalDataRepository.findByUserId(id)
 
+    override fun findUserById(id: Long) = userRepository.findUserProfileById(id)
+
     override fun update(userUpdateDto: UserUpdateDto, userId: Long) = userRepository.update(userUpdateDto, userId)
 }

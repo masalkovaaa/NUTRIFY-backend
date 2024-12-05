@@ -7,10 +7,7 @@ import com.amazonaws.client.builder.AwsClientBuilder
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.example.WebStarter
-import com.example.app.controller.AuthController
-import com.example.app.controller.FoodController
-import com.example.app.controller.PersonalDataController
-import com.example.app.controller.UserController
+import com.example.app.controller.*
 import com.example.app.dto.channel.GenerateDietMessage
 import com.example.app.repository.*
 import com.example.app.repository.impl.*
@@ -29,6 +26,7 @@ internal val controllers = DI.Module("controllers") {
         bind { singleton { FoodController(instance()) } }
         bind { singleton { UserController(instance()) } }
         bind { singleton { PersonalDataController(instance()) } }
+        bind { singleton { RecipeController(instance()) } }
     }
 }
 
@@ -39,6 +37,7 @@ internal val services = DI.Module("services") {
     bind<FoodService>() with singleton { FoodServiceImpl(instance(), instance(), instance(), instance(), instance(), instance(), instance()) }
     bind<UploadService>() with singleton { UploadServiceImpl(instance(), instance()) }
     bind<PersonalDataService>() with singleton { PersonalDataServiceImpl(instance(), instance()) }
+    bind<RecipeService>() with singleton { RecipeServiceImpl(instance()) }
 }
 
 internal val repositories = DI.Module("repositories") {

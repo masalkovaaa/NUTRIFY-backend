@@ -62,6 +62,7 @@ class UserRepositoryImpl : UserRepository {
     private fun toUserDto(row: ResultRow) = UserDto(
         id =  row[Users.id].value,
         email = row[Users.email],
+        name = row[Users.name],
         personalData = PersonalDataDao.wrapRow(row).toSerializable()
     )
 }

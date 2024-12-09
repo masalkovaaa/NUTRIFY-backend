@@ -5,5 +5,6 @@ import com.example.app.model.PersonalDataDto
 data class UserDto(
     val id: Long,
     val email: String,
+    val name: String,
     val personalData: PersonalDataDto
 )

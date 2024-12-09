@@ -1,6 +1,7 @@
 package com.example.app.service
 
 import com.example.app.dto.food.FoodCreateDto
+import com.example.app.dto.food.MealDietDto
 import com.example.app.model.MealType
 import com.example.app.model.Recipe
 import java.time.LocalDate
@@ -17,5 +18,5 @@ interface FoodService {
 
     fun calculateDiet(userId: Long)
 
-    fun findDietByDate(date: LocalDate, userId: Long): List<Recipe>
+    fun findDietByDate(date: LocalDate, userId: Long): List<MealDietDto>
 }

@@ -5,7 +5,6 @@ import com.example.app.model.*
 import com.example.app.repository.MealDietRepository
 import com.example.plugins.extension.db.dbQuery
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.with
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
 import java.time.LocalDate
@@ -33,11 +32,10 @@ class MealDietRepositoryImpl : MealDietRepository {
     }
 
     override fun findDietByDate(date: LocalDate, userId: Long) = dbQuery {
-        (MealDiet innerJoin Recipes)
+        (MealDiet innerJoin Recipes innerJoin Ingredients)
             .select(MealDiet.columns + Recipes.columns)
             .where { (MealDiet.userId eq userId).and(MealDiet.date eq date) }
-            .map { RecipeDao.wrapRow(it) }
-            .with(RecipeDao::ingredients)
-            .map { it.toSerializable() }
+            .map { MealDietDto(it[MealDiet.mealType], RecipeDao.wrapRow(it).toSerializable()) }
     }
+
 }

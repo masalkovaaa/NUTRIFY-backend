@@ -32,10 +32,11 @@ class MealDietRepositoryImpl : MealDietRepository {
     }
 
     override fun findDietByDate(date: LocalDate, userId: Long) = dbQuery {
-        (MealDiet innerJoin Recipes innerJoin Ingredients)
+        (MealDiet innerJoin Recipes)
             .select(MealDiet.columns + Recipes.columns)
             .where { (MealDiet.userId eq userId).and(MealDiet.date eq date) }
             .map { MealDietDto(it[MealDiet.mealType], RecipeDao.wrapRow(it).toSerializable()) }
+            .sortedBy { it.mealType.value }
     }
 
 }

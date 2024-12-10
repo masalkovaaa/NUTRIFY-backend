@@ -20,7 +20,7 @@ class PersonalDataController(
                     put {
                         val principal = call.getPrincipal()
                         val body = call.receive<PersonalDataUpdateDto>()
-                        val ans = personalDataService.updatePersonalData(body, principal.id)
+                        personalDataService.updatePersonalData(body, principal.id)
                         call.respond(HttpStatusCode.OK)
                     }
 

@@ -17,5 +17,5 @@ interface UserRepository {
 
     fun save(registrationRequest: RegistrationRequest): User
 
-    fun update(userUpdateDto: UserUpdateDto, userId: Long): User
+    fun update(userUpdateDto: UserUpdateDto, userId: Long): UserUpdateDto
 }

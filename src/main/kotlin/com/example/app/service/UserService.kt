@@ -11,5 +11,5 @@ interface UserService {
 
     fun findUserById(id: Long): UserDto
 
-    fun update(userUpdateDto: UserUpdateDto, userId: Long): User
+    fun update(userUpdateDto: UserUpdateDto, userId: Long): UserUpdateDto
 }

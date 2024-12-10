@@ -51,11 +51,11 @@ class UserRepositoryImpl : UserRepository {
     }
 
     override fun update(userUpdateDto: UserUpdateDto, userId: Long) = dbQuery {
-        UserDao.findByIdAndUpdate(userId) {
-            it.name = userUpdateDto.email
-            it.email = userUpdateDto.email
-            it.password = BCrypt.hashpw(userUpdateDto.password, BCrypt.gensalt())
-        }?.toSerializable()
+        UserDao.findByIdAndUpdate(userId) { dao ->
+            userUpdateDto.email?.let { dao.email = userUpdateDto.email }
+            userUpdateDto.name?.let { dao.name = userUpdateDto.name }
+            userUpdateDto.password?.let { dao.password = BCrypt.hashpw(userUpdateDto.password, BCrypt.gensalt()) }
+        }?.let { UserUpdateDto(it.name, it.email, null) }
             ?: throw NotFoundException("User with id $userId does not exist")
     }
 

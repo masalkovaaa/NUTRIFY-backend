@@ -23,6 +23,7 @@ class RecipeRepositoryImpl : RecipeRepository {
     override fun findAll() = dbQuery {
         RecipeDao.all()
             .with(RecipeDao::ingredients)
+            .distinctBy { it.name }
             .map { it.toSerializable() }
     }
 
@@ -36,6 +37,7 @@ class RecipeRepositoryImpl : RecipeRepository {
             .select(Recipes.columns + MealTime.columns + Ingredients.columns)
             .where { MealTime.type eq mealType }
             .map { RecipeDao.wrapRow(it) }
+            .distinctBy { it.name }
             .with(RecipeDao::ingredients)
             .map { it.toSerializable() }
     }

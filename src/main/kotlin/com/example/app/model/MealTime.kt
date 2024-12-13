@@ -19,7 +19,11 @@ class MealTimeDao(id: EntityID<Long>) : LongEntity(id) {
 }
 
 enum class MealType(val percentage: Double, val value: Int) {
-    BREAKFAST(0.25, 1), LAUNCH(0.35, 2), DINNER(0.25, 3), PART_MEAL(0.15, 4);
+    BREAKFAST(0.25, 1),
+    LAUNCH(0.35, 2),
+    DINNER(0.25, 3),
+    PART_MEAL(0.15, 4);
 
     fun calculateCalories(calories: Double) = calories * percentage
 }
+

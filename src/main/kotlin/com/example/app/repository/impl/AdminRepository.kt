@@ -20,7 +20,7 @@ class AdminRepositoryImpl : AdminRepository {
     }
 
     override fun findTableByName(name: String) = dbQuery {
-        val table = allTables.find { it.tableName.equals(name, ignoreCase = true) }
+        val table = allTables.find { it.tableName.equals("nutrify.$name", ignoreCase = true) }
             ?: error("Table '$name' not found")
 
         val ans = table.selectAll().map { it.toMap() }

@@ -21,8 +21,8 @@ fun Application.configureDatabases(appConfig: AppConfig) {
         Users.upsert {
             it[id] = 1
             it[name] = "admin"
-            it[email] = "admin"
-            it[password] = BCrypt.hashpw("admin", BCrypt.gensalt())
+            it[email] = "admin@gmail.com"
+            it[password] = BCrypt.hashpw("Admin123!", BCrypt.gensalt())
             it[role] = Role.ADMIN
         }
     }

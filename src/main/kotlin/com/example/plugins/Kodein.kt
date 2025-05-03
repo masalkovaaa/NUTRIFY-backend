@@ -27,6 +27,7 @@ internal val controllers = DI.Module("controllers") {
         bind { singleton { UserController(instance()) } }
         bind { singleton { PersonalDataController(instance()) } }
         bind { singleton { RecipeController(instance()) } }
+        bind { singleton { AdminController(instance()) } }
     }
 }
 
@@ -38,6 +39,7 @@ internal val services = DI.Module("services") {
     bind<UploadService>() with singleton { UploadServiceImpl(instance(), instance()) }
     bind<PersonalDataService>() with singleton { PersonalDataServiceImpl(instance(), instance()) }
     bind<RecipeService>() with singleton { RecipeServiceImpl(instance()) }
+    bind<AdminService>() with singleton { AdminServiceImpl(instance()) }
 }
 
 internal val repositories = DI.Module("repositories") {
@@ -47,6 +49,7 @@ internal val repositories = DI.Module("repositories") {
     bind<IngredientRepository>() with singleton { IngredientRepositoryImpl() }
     bind<MealTimeRepository>() with singleton { MealTimeRepositoryImpl() }
     bind<MealDietRepository>() with singleton { MealDietRepositoryImpl() }
+    bind<AdminRepository>() with singleton { AdminRepositoryImpl() }
 }
 
 internal val s3 = DI.Module("s3") {

@@ -8,7 +8,7 @@ import java.time.LocalDate
 
 interface FoodService {
 
-    fun save(food: FoodCreateDto)
+    fun save(food: FoodCreateDto): Recipe
 
     fun findAll(): List<Recipe>
 

@@ -47,9 +47,10 @@ class FoodServiceImpl(
     }
 
     override fun save(food: FoodCreateDto) = dbQuery {
-        val recipeId = recipeRepository.save(food.recipe).id!!
-        ingredientRepository.saveAll(food.ingredients, recipeId)
-        mealTimeRepository.save(food.mealTypes, recipeId)
+        val recipe = recipeRepository.save(food.recipe)
+        ingredientRepository.saveAll(food.ingredients, recipe.id!!)
+        mealTimeRepository.save(food.mealTypes, recipe.id)
+        recipe
     }
 
     override fun findAll() = recipeRepository.findAll()

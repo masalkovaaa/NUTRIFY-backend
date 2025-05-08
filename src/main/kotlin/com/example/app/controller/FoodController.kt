@@ -26,8 +26,8 @@ class FoodController(
                 authenticate("admin") {
                     post {
                         val foodCreateDto = call.receive<FoodCreateDto>()
-                        foodService.save(foodCreateDto)
-                        call.respond(HttpStatusCode.Created)
+                        val result = foodService.save(foodCreateDto)
+                        call.respond(result)
                     }
 
                     post("{recipeId}") {

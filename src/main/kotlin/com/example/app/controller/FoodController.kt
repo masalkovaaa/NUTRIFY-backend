@@ -19,6 +19,11 @@ import java.time.LocalDate
 class FoodController(
     private val foodService: FoodService
 ) : Controller {
+
+    companion object {
+        val allowedExtensions = listOf("jpg", "jpeg", "png", "webp", "svg")
+    }
+
     override val setup: Routing.() -> Unit
         get() = {
             route("food") {
@@ -35,12 +40,20 @@ class FoodController(
                         val multipart = call.receiveMultipart()
                         multipart.forEachPart { part ->
                             if (part is PartData.FileItem) {
-                                val bytes = part.provider().readRemaining().readByteArray()
-                                foodService.addImageToRecipe(bytes, recipeId)
+                                val filename = part.originalFileName ?: ""
+                                val extension = filename.substringAfterLast('.', "").lowercase()
+
+                                if (extension in allowedExtensions) {
+                                    val bytes = part.provider().readRemaining().readByteArray()
+                                    foodService.addImageToRecipe(bytes, recipeId)
+                                    call.respond(HttpStatusCode.OK)
+                                } else {
+                                    part.dispose()
+                                    call.respond(HttpStatusCode.BadRequest, "Unsupported file type: .$extension")
+                                }
                             }
                             part.dispose()
                         }
-                        call.respond(HttpStatusCode.OK)
                     }
                 }
 

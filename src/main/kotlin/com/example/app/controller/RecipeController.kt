@@ -4,6 +4,7 @@ import com.example.app.model.Ingredient
 import com.example.app.service.RecipeService
 import com.example.plugins.config.Controller
 import io.ktor.http.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -21,11 +22,14 @@ class RecipeController(
                     call.respond(ans)
                 }
 
-                patch {
-                    val dto = call.receive<Ingredient>()
-                    recipeService.updateIngredient(dto)
-                    call.respond(HttpStatusCode.OK)
+                authenticate("admin") {
+                    patch {
+                        val dto = call.receive<Ingredient>()
+                        recipeService.updateIngredient(dto)
+                        call.respond(HttpStatusCode.OK)
+                    }
                 }
+
             }
         }
 }

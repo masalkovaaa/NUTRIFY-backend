@@ -1,7 +1,10 @@
 package com.example.app.controller
 
+import com.example.app.model.Ingredient
 import com.example.app.service.RecipeService
 import com.example.plugins.config.Controller
+import io.ktor.http.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
@@ -16,6 +19,12 @@ class RecipeController(
                     val id = call.parameters.getOrFail<Long>("id")
                     val ans = recipeService.findRecipeById(id)
                     call.respond(ans)
+                }
+
+                patch {
+                    val dto = call.receive<Ingredient>()
+                    recipeService.updateIngredient(dto)
+                    call.respond(HttpStatusCode.OK)
                 }
             }
         }

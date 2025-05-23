@@ -38,7 +38,7 @@ internal val services = DI.Module("services") {
     bind<FoodService>() with singleton { FoodServiceImpl(instance(), instance(), instance(), instance(), instance(), instance(), instance()) }
     bind<UploadService>() with singleton { UploadServiceImpl(instance(), instance()) }
     bind<PersonalDataService>() with singleton { PersonalDataServiceImpl(instance(), instance()) }
-    bind<RecipeService>() with singleton { RecipeServiceImpl(instance()) }
+    bind<RecipeService>() with singleton { RecipeServiceImpl(instance(), instance()) }
     bind<AdminService>() with singleton { AdminServiceImpl(instance()) }
 }
 

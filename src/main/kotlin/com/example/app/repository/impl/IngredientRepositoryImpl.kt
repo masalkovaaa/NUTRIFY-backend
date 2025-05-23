@@ -19,4 +19,12 @@ class IngredientRepositoryImpl : IngredientRepository {
             }
         }
     }
+
+    override fun update(ingredient: Ingredient): Unit = dbQuery {
+        IngredientDao.findByIdAndUpdate(ingredient.id!!) {
+            it.name = ingredient.name
+            it.weight = ingredient.weight
+            it.weightType = ingredient.weightType
+        }
+    }
 }

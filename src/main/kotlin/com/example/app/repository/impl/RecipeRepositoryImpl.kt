@@ -26,7 +26,7 @@ class RecipeRepositoryImpl : RecipeRepository {
         RecipeDao.all()
             .with(RecipeDao::ingredients)
             .distinctBy { it.name }
-            .map { it.toSerializable() }
+            .map { it.toSerializable().addMealTypes() }
     }
 
     override fun findById(id: Long) = dbQuery {

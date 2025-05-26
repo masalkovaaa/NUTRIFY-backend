@@ -16,4 +16,6 @@ interface RecipeRepository {
     fun addImage(url: String, recipeId: Long)
 
     fun findMealByRangeCaloriesAndType(caloriesFrom: Int, caloriesTo: Int, type: MealType): List<Recipe>
+
+    fun updateRecipe(recipe: Recipe)
 }

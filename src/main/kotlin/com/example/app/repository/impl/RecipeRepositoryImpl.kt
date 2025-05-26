@@ -4,8 +4,10 @@ import com.example.app.model.*
 import com.example.app.repository.RecipeRepository
 import com.example.plugins.exception.NotFoundException
 import com.example.plugins.extension.db.dbQuery
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.with
-import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class RecipeRepositoryImpl : RecipeRepository {
 
@@ -39,7 +41,7 @@ class RecipeRepositoryImpl : RecipeRepository {
             .map { RecipeDao.wrapRow(it) }
             .distinctBy { it.name }
             .with(RecipeDao::ingredients)
-            .map { it.toSerializable() }
+            .map { it.toSerializable().addMealTypes() }
     }
 
     override fun addImage(url: String, recipeId: Long): Unit = dbQuery {
@@ -59,5 +61,31 @@ class RecipeRepositoryImpl : RecipeRepository {
             .map { RecipeDao.wrapRow(it) }
             .with(RecipeDao::ingredients)
             .map { it.toSerializable() }
+    }
+
+    override fun updateRecipe(recipe: Recipe) = dbQuery {
+        RecipeDao.findByIdAndUpdate(recipe.id!!) {
+            it.name = recipe.name
+            it.description = recipe.description
+            it.calories = recipe.calories
+            it.protein = recipe.protein
+            it.fats = recipe.fats
+            it.carbs = recipe.carbs
+        }?.toSerializable()
+        MealTime.deleteWhere { MealTime.recipeId eq recipe.id }
+        recipe.mealTypes.forEach { mealType ->
+            MealTimeDao.new {
+                this.recipeId = EntityID(recipe.id, Recipes)
+                this.type = mealType
+            }
+        }
+    }
+
+    private fun Recipe.addMealTypes(): Recipe = dbQuery {
+        this.mealTypes.addAll(
+            MealTime.selectAll().where { MealTime.recipeId eq this@addMealTypes.id!! }
+                .map { it[MealTime.type] }
+        )
+        this
     }
 }

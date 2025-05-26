@@ -1,6 +1,7 @@
 package com.example.app.controller
 
 import com.example.app.model.Ingredient
+import com.example.app.model.Recipe
 import com.example.app.service.RecipeService
 import com.example.plugins.config.Controller
 import io.ktor.http.*
@@ -26,6 +27,12 @@ class RecipeController(
                     patch {
                         val dto = call.receive<Ingredient>()
                         recipeService.updateIngredient(dto)
+                        call.respond(HttpStatusCode.OK)
+                    }
+
+                    put {
+                        val dto = call.receive<Recipe>()
+                        recipeService.updateRecipe(dto)
                         call.respond(HttpStatusCode.OK)
                     }
                 }

@@ -49,5 +49,6 @@ data class Recipe(
     val fats: Int,
     val carbs: Int,
     val image: String?,
-    val ingredients: List<Ingredient> = arrayListOf()
+    val ingredients: List<Ingredient> = arrayListOf(),
+    val mealTypes: MutableList<MealType> = arrayListOf()
 )

@@ -13,6 +13,8 @@ import com.example.plugins.exception.NotFoundException
 import com.example.plugins.extension.db.dbQuery
 import org.jetbrains.exposed.sql.ResultRow
 import org.mindrot.jbcrypt.BCrypt
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 class UserRepositoryImpl : UserRepository {
 
@@ -41,12 +43,13 @@ class UserRepositoryImpl : UserRepository {
             .any()
     }
 
-    override fun save(registrationRequest: RegistrationRequest)= dbQuery {
+    override fun save(registrationRequest: RegistrationRequest) = dbQuery {
         UserDao.new {
             name = registrationRequest.name
             email = registrationRequest.email
             password = BCrypt.hashpw(registrationRequest.password, BCrypt.gensalt())
             role = Role.USER
+            createdAt = LocalDateTime.now(ZoneId.of("Europe/Moscow"))
         }.toSerializable()
     }
 
@@ -63,6 +66,7 @@ class UserRepositoryImpl : UserRepository {
         id =  row[Users.id].value,
         email = row[Users.email],
         name = row[Users.name],
-        personalData = PersonalDataDao.wrapRow(row).toSerializable()
+        personalData = PersonalDataDao.wrapRow(row).toSerializable(),
+        createdAt = row[Users.createdAt]
     )
 }

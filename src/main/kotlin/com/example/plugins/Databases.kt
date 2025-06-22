@@ -10,9 +10,9 @@ import org.mindrot.jbcrypt.BCrypt
 
 fun Application.configureDatabases(appConfig: AppConfig) {
     val database = Database.connect(
-            url = appConfig.database.url,
-            user = appConfig.database.user,
-            password = appConfig.database.password
+        url = appConfig.database.url,
+        user = appConfig.database.user,
+        password = appConfig.database.password
     )
 
     transaction(database) {

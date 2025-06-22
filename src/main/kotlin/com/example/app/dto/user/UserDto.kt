@@ -8,5 +8,5 @@ data class UserDto(
     val email: String,
     val name: String,
     val personalData: PersonalDataDto,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime?
 )

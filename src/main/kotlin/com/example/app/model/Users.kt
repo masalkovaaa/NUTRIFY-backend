@@ -13,7 +13,7 @@ object Users : LongIdTable("nutrify.users") {
     val email = varchar("email", 1024)
     val password = varchar("password", 1024)
     val role = enumerationByName("role", 10, Role::class)
-    val createdAt = datetime("created_at")
+    val createdAt = datetime("created_at").nullable()
 }
 
 class UserDao(id: EntityID<Long>) : LongEntity(id) {
@@ -38,5 +38,5 @@ data class User(
     val email: String,
     val password: String,
     val role: Role,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime? = null
 )

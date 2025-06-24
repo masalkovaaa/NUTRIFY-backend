@@ -113,13 +113,20 @@ class FoodServiceImpl(
 
     private fun calculateTargetFoodCharacteristic(personalData: PersonalDataDto): FoodCharacteristicDto {
         val calories = personalData.calories.toDouble()
-        val protein = personalData.weight.toDouble() * 1.8
-        val fats = personalData.weight.toDouble()
+
+        val proteinRatio = 0.3
+        val fatRatio = 0.3
+        val carbRatio = 0.4
+
+        val protein = (calories * proteinRatio) / 4
+        val fats = (calories * fatRatio) / 9
+        val carbs = (calories * carbRatio) / 4
+
         return FoodCharacteristicDto(
-            calories,
-            protein,
-            fats,
-            (calories - protein * 4 - fats * 9) / 4
+            calories = calories,
+            protein = protein,
+            fats = fats,
+            carbs = carbs
         )
     }
 
